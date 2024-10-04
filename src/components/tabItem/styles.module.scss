@@ -1,0 +1,14 @@
+.tabItem {
+  padding: 15px;
+  border-radius: 5px;
+
+  &.activeItem {
+    opacity: 1;
+    display: block;
+  }
+
+  &.hiddenItem {
+    opacity: 0;
+    display: none;
+  }
+}

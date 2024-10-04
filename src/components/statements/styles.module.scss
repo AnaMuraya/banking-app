@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .searchInput {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .filters button {
+    margin-right: 10px;
+    padding: 5px 10px;
+  }
+
+  .sortButton {
+    margin-bottom: 10px;
+    padding: 5px 10px;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: rgb(107, 107, 107);
+      font-weight: bold;
+    }
+
+    tbody tr:hover {
+      background-color: rgb(41, 41, 41);
+    }
+  }
+
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      padding: 5px 10px;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+.collapsibleSection {
+  .title {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    font-weight: bold;
+    border: none;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 5px;
+
+    .arrow {
+      margin-left: 10px;
+    }
+  }
+
+  .content {
+    padding: 10px;
+    border-left: 4px solid #c969ff;
+  }
+}
