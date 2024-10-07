@@ -12,7 +12,12 @@ interface PaginationProps {
 export default function Pagination({ currentPage, handleCurrentPage, totalPages }: PaginationProps) {
   return (
     <div className={styles.pagination}>
-      <button onClick={() => handleCurrentPage(1)} disabled={currentPage === 1} data-testid="first-page">
+      <button
+        onClick={() => handleCurrentPage(1)}
+        disabled={currentPage === 1}
+        data-testid="first-page"
+        aria-label="First page"
+      >
         <BiFirstPage />
       </button>
 
@@ -20,6 +25,7 @@ export default function Pagination({ currentPage, handleCurrentPage, totalPages 
         onClick={() => handleCurrentPage(Math.max(currentPage - 1, 1))}
         disabled={currentPage <= 1}
         data-testid="prev-page"
+        aria-label="Previous page"
       >
         <GrFormPrevious />
       </button>
@@ -32,6 +38,7 @@ export default function Pagination({ currentPage, handleCurrentPage, totalPages 
         onClick={() => handleCurrentPage(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage !== 0 && currentPage === totalPages}
         data-testid="next-page"
+        aria-label="Next page"
       >
         <GrFormNext />
       </button>
@@ -40,6 +47,7 @@ export default function Pagination({ currentPage, handleCurrentPage, totalPages 
         onClick={() => handleCurrentPage(totalPages)}
         disabled={currentPage === totalPages}
         data-testid="last-page"
+        aria-label="Last page"
       >
         <BiLastPage />
       </button>

@@ -1,5 +1,7 @@
 # Banking app
 
+Chek it out [banking-app](https://banking-app-git-main-anamurayas-projects.vercel.app/)
+
 This application contains three main features;
 
 1. Deposits - to deposit money to your account.

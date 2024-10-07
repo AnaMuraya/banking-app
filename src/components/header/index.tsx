@@ -18,7 +18,7 @@ export default function Header() {
   return (
     <nav className={styles.nav}>
       <div className={styles.content}>
-        <Link className={cn(styles.logo, { [styles.inActive]: !!activeTab })} href={'/'}>
+        <Link className={cn(styles.logo, { [styles.inActive]: !!activeTab })} href={'/'} aria-label="Home">
           <PiBank size={24} />
         </Link>
 

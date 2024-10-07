@@ -105,6 +105,7 @@ export default function Transfer() {
               })}
               name="senderAccountNumber"
               defaultValue=""
+              aria-label="Sender account number"
             >
               <option value="" disabled>
                 Select your account number
