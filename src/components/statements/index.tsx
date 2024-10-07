@@ -5,17 +5,22 @@ import { useEffect, useMemo, useState } from 'react'
 import { useStatementsContext } from '@/contexts'
 import { SortOrderOptions, StatementFilters } from '@/types'
 import { filterByDateRange, filterByTransactionType, search, sortByDate } from '@/utils'
-import { DateRange, FilterOptions, Pagination, Search, SortDate, Table } from './customOptions'
+import DateRange from './dateRange'
+import FilterOptions from './filterOptions'
+import Pagination from './pagination'
+import Search from './search'
+import Table from './table'
 
 import styles from './styles.module.scss'
 
 interface StatementsProps {
+  title: string
   selectedFilter?: StatementFilters
 }
 
 const ROW_PER_PAGE = 10
 
-export default function Statements({ selectedFilter }: StatementsProps) {
+export default function Statements({ title, selectedFilter }: StatementsProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<StatementFilters>(selectedFilter || StatementFilters.all)
   const [sortOrder, setSortOrder] = useState<SortOrderOptions>(SortOrderOptions.desc)
@@ -36,7 +41,7 @@ export default function Statements({ selectedFilter }: StatementsProps) {
     if (startDate && endDate) data = filterByDateRange(startDate, endDate, data)
 
     return data
-  }, [searchTerm, filter, sortOrder, currentPage, statements])
+  }, [searchTerm, filter, statements, startDate, endDate])
 
   const processedData = useMemo(() => {
     const newData = sortByDate(filteredData, sortOrder)
@@ -57,22 +62,24 @@ export default function Statements({ selectedFilter }: StatementsProps) {
 
   return (
     <div className={styles.wrapper}>
-      <h3>Account Statements</h3>
+      <h3 className={styles.title}>{title}.</h3>
 
-      <Search searchTerm={searchTerm} handleSearchTerm={handleSearchTerm} />
+      {!selectedFilter && (
+        <div className={styles.filters}>
+          <Search searchTerm={searchTerm} handleSearchTerm={handleSearchTerm} />
 
-      <DateRange
-        startDate={startDate}
-        handleStartDate={handleStartDate}
-        endDate={endDate}
-        handleEndDate={handleEndDate}
-      />
+          <DateRange
+            startDate={startDate}
+            handleStartDate={handleStartDate}
+            endDate={endDate}
+            handleEndDate={handleEndDate}
+          />
 
-      <FilterOptions handleFilter={handleFilter} />
+          <FilterOptions handleFilter={handleFilter} filter={filter} />
+        </div>
+      )}
 
-      <SortDate toggleSortOrder={toggleSortOrder} sortOrder={sortOrder} />
-
-      <Table processedData={processedData} />
+      <Table processedData={processedData} toggleSortOrder={toggleSortOrder} sortOrder={sortOrder} />
 
       <Pagination currentPage={currentPage} handleCurrentPage={handleCurrentPage} totalPages={totalPages} />
     </div>

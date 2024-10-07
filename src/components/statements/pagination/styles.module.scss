@@ -1,0 +1,38 @@
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+
+  button {
+    padding: 0 5px;
+    height: 30px;
+    width: 30px;
+    font-size: var(--font-lg);
+    line-height: 0;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: transparent;
+      border: 1px solid var(--primary);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgb(107, 107, 107);
+      color: white;
+
+      &:hover {
+        border: 1px solid transparent;
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+@import '/src/sass/resize.scss';
+
+.filters {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+
+  @include for-size(desktopSm) {
+    justify-content: flex-start;
+  }
+
+  button {
+    padding: 0 24px;
+    height: 34px;
+    border: 1px solid var(--foreground);
+    background-color: transparent;
+    border-radius: 100px;
+    font-size: var(--font-sm);
+    font-weight: 500;
+
+    &.active {
+      border: 1px solid var(--primary);
+      background-color: var(--primary);
+      color: var(--background);
+    }
+  }
+}

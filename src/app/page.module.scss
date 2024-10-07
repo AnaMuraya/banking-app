@@ -1,0 +1,97 @@
+@import '/src/sass/resize.scss';
+
+.page {
+  margin-top: 60px;
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 56px;
+
+  .title {
+    font-size: var(--font-xxl);
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+
+    .bac {
+      color: var(--primary);
+    }
+  }
+
+  .account {
+    .subtitle {
+      font-size: var(--font-sm);
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .balance {
+      font-size: var(--font-xxl);
+      font-weight: 700;
+      color: var(--primary);
+    }
+  }
+
+  .navigator {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    transition: all 0.5s ease;
+
+    @include for-size(tablet) {
+      gap: 12px;
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 20px;
+      background-image: url('/assets/bg-card.png');
+      padding: 24px;
+
+      .heading {
+        font-size: var(--font-sm);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .currency {
+        font-size: var(--font-xl);
+        font-weight: 700;
+      }
+
+      .button {
+        padding: 10px 20px;
+        background: transparent;
+        color: var(--primary);
+        font-size: var(--font-sm);
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid var(--primary);
+        text-align: center;
+      }
+
+      .icon {
+        background-color: var(--primary);
+        color: var(--secondary);
+        padding: 10px;
+        border-radius: 10px;
+
+        &.turnRight {
+          transform: rotate(270deg);
+        }
+      }
+    }
+  }
+
+  .currencyNumber {
+    &:nth-last-of-type(1),
+    &:nth-last-of-type(2) {
+      opacity: 0.5;
+    }
+  }
+}

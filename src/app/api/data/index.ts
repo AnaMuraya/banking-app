@@ -1,1 +1,1 @@
-export { accountStatement, accounts } from './accountStatement'
+export { accountStatement, accounts, recipientAccounts } from './accountStatement'

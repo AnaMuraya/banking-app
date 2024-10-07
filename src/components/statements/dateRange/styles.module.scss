@@ -1,0 +1,32 @@
+@import '/src/sass/resize.scss';
+
+.dateRange {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  @include for-size(mobileSm) {
+    width: calc(100% - 20px);
+  }
+
+  input {
+    border: 1px solid var(--foreground);
+    background-image: url('/assets/bg-card.png');
+    padding: 8px 16px;
+    font-size: var(--font-sm);
+    height: 34px;
+    border-radius: 0;
+    outline: none;
+
+    &:active,
+    &:focus,
+    &:focus-within,
+    &:focus-visible {
+      border: 1px solid var(--primary);
+    }
+
+    @include for-size(mobileSm) {
+      max-width: 135px;
+    }
+  }
+}

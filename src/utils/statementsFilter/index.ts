@@ -1,11 +1,15 @@
+import { formatDate } from '@/elements'
 import { SortOrderOptions, StatementFilters, Transaction, TransactionTypes } from '@/types'
 
 export const search = (searchTerm: string, data: Transaction[]) => {
+  const searchTermLower = searchTerm.toLowerCase()
+
   return data.filter(
     entry =>
-      entry.date.includes(searchTerm) ||
-      entry.amount.includes(searchTerm) ||
-      entry.balance.toString().includes(searchTerm)
+      entry.date.toLowerCase().includes(searchTermLower) ||
+      formatDate(entry.date).toLowerCase().includes(searchTermLower) ||
+      entry.amount.toString().includes(searchTermLower) ||
+      entry.balance?.toString().includes(searchTermLower)
   )
 }
 
@@ -27,7 +31,7 @@ export const filterByDateRange = (startDate: string, endDate: string, data: Tran
   const end = new Date(endDate).getTime()
 
   return data.filter(entry => {
-    const entryDate = new Date(entry.date.split('.').reverse().join('-')).getTime()
+    const entryDate = new Date(entry.date).getTime()
 
     if (!startDate) return entryDate <= end
 
@@ -45,8 +49,8 @@ export const filterByDateRange = (startDate: string, endDate: string, data: Tran
  */
 export const sortByDate = (filteredData: Transaction[], sortOrder: SortOrderOptions) => {
   return filteredData.sort((a, b) => {
-    const dateA = new Date(a.date.split('.').reverse().join('-')).getTime()
-    const dateB = new Date(b.date.split('.').reverse().join('-')).getTime()
+    const dateA = new Date(a.date).getTime()
+    const dateB = new Date(b.date).getTime()
     return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
   })
 }

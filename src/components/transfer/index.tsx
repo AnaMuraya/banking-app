@@ -1,5 +1,6 @@
 'use client'
 
+import cn from 'classnames'
 import { isValid } from 'iban'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -8,6 +9,8 @@ import { accounts } from '@/app/api/data'
 import { useStatementsContext } from '@/contexts'
 
 import { TransactionTypes } from '@/types'
+import { PiCaretDownBold } from 'react-icons/pi'
+import AccountBalance from '../accountBalance'
 import styles from './styles.module.scss'
 
 type Inputs = {
@@ -18,42 +21,33 @@ type Inputs = {
 
 export default function Transfer() {
   const [previewBalance, setPreviewBalance] = useState<number | null>(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const { updateStatements, balance } = useStatementsContext()
 
   useEffect(() => {
-    setPreviewBalance(balance)
+    setPreviewBalance(balance.balance)
   }, [balance])
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitSuccessful },
-    getValues,
-  } = useForm<Inputs>()
+  const { register, handleSubmit, formState, getValues } = useForm<Inputs>()
+  const { errors, isSubmitSuccessful } = formState
+
+  useEffect(() => {
+    if (isSubmitSuccessful) setShowSuccessMessage(true)
+
+    setTimeout(() => {
+      setShowSuccessMessage(false)
+    }, 5000)
+  }, [isSubmitSuccessful])
 
   const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-    console.log('Transfer data', data, {
-      id: '22',
-      amount: `-${data.amount}`,
-      balance: balance - data.amount,
-      date: new Date().toISOString(),
-    })
-
-    updateStatements({
-      amount: `-${data.amount}`,
-      balance: balance - data.amount,
-      type: TransactionTypes.transfer,
-    })
+    updateStatements({ amount: data.amount, type: TransactionTypes.transfer })
   }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputAmount = Number(e.target.value)
 
-    if (!isNaN(inputAmount) && inputAmount >= 0) {
-      setPreviewBalance(balance - inputAmount)
-    } else {
-      setPreviewBalance(balance)
-    }
+    if (!isNaN(inputAmount) && inputAmount >= 0) setPreviewBalance(balance.balance - inputAmount)
+    else setPreviewBalance(balance.balance)
   }
 
   const isIBANValid = (iban: string) => {
@@ -65,20 +59,26 @@ export default function Transfer() {
   }
 
   const isAmountValid = (amount: number) => {
-    if (amount > balance) return false
+    if (amount > balance.balance) return false
 
     return true
   }
 
   return (
     <div className={styles.wrapper}>
-      <h3>Transfer Form</h3>
+      <h3 className={styles.title}>Transfer Form.</h3>
+
+      <div className={styles.balances}>
+        <AccountBalance balance={balance.balance} title="Account Balance" />
+        <AccountBalance balance={previewBalance || balance.balance} title="New Balance" />
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        {isSubmitSuccessful && <p>Request submitted successfully</p>}
+        <p className={cn(styles.success, { [styles.active]: showSuccessMessage })}>Request submitted successfully</p>
 
         <div className={styles.inputWrapper}>
           <label htmlFor="amount">Amount</label>
+
           <input
             {...register('amount', {
               required: true,
@@ -92,29 +92,33 @@ export default function Transfer() {
             placeholder="Enter amount"
           />
 
-          <span>Current balance: ${previewBalance}</span>
-          {errors.amount && <p>Please make sure amount is valid</p>}
+          {errors.amount && <p className={styles.error}>Please make sure amount is valid</p>}
         </div>
 
         <div className={styles.inputWrapper}>
           <label htmlFor="senderAccountNumber">Your Account Number</label>
-          <select
-            {...register('senderAccountNumber', {
-              required: true,
-            })}
-            name="senderAccountNumber"
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select your account number
-            </option>
-            {accounts.map((acc, idx) => (
-              <option value={acc} key={idx}>
-                {acc}
+
+          <div className={styles.selectWrapper}>
+            <select
+              {...register('senderAccountNumber', {
+                required: true,
+              })}
+              name="senderAccountNumber"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select your account number
               </option>
-            ))}
-          </select>
-          {errors.senderAccountNumber && <p>Please select your account number</p>}
+              {accounts.map((acc, idx) => (
+                <option value={acc} key={idx}>
+                  {acc}
+                </option>
+              ))}
+            </select>
+            <PiCaretDownBold className={styles.caret} size={18} />
+          </div>
+
+          {errors.senderAccountNumber && <p className={styles.error}>Please select your account number</p>}
         </div>
 
         <div className={styles.inputWrapper}>
@@ -130,10 +134,12 @@ export default function Transfer() {
             placeholder="Enter the recipient's account number"
           />
 
-          {errors.recipientAccountNumber && <p>Please fill in the recipient's IBAN account number</p>}
+          {errors.recipientAccountNumber && (
+            <p className={styles.error}>Please fill in the recipient's IBAN account number</p>
+          )}
         </div>
 
-        <input type="submit" />
+        <input type="submit" data-testid="submit-transfer" />
       </form>
     </div>
   )

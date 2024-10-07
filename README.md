@@ -29,6 +29,8 @@ Install all the dependencies:
 npm install
 # or
 yarn
+#or
+bun install
 ```
 
 Run the development server:
@@ -37,6 +39,30 @@ Run the development server:
 npm run dev
 # or
 yarn dev
+# or
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## Testing
+
+To run all tests in the development server:
+
+```bash
+npm run test
+# or
+yarn run test
+# or
+bun run test
+```
+
+Optionally, you can use to reload on changes
+
+```bash
+npm run test:watch
+# or
+yarn run test:watch
+# or
+bun run test:watch
+```

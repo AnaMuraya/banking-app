@@ -8,5 +8,4 @@ export enum StatementFilters {
 export enum SortOrderOptions {
   asc = 'asc',
   desc = 'desc',
-
 }

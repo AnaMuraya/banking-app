@@ -1,0 +1,9 @@
+.sortButton {
+  background: transparent;
+  outline: none;
+  border: none;
+
+  .active {
+    fill: var(--primary);
+  }
+}

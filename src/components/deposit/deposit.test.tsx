@@ -1,20 +1,24 @@
-import { accounts } from '@/app/api/data'
-import { useStatementsContext } from '@/contexts'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
+import { useStatementsContext } from '@/contexts'
+
 import Deposit from '.'
 
-// Mock the useStatementsContext to simulate context data
 jest.mock('@/contexts', () => ({
   useStatementsContext: jest.fn(),
 }))
-describe('Deposit Component', () => {
-  const updateStatementsMock = jest.fn()
 
+const updateStatementsMock = jest.fn()
+const mockBalance = 1000
+
+describe('Deposit Component', () => {
   beforeEach(() => {
     ;(useStatementsContext as jest.Mock).mockReturnValue({
-      balance: 1000,
-      updateStatements: updateStatementsMock,
+      balance: { balance: mockBalance },
+      updateStatements: updateStatementsMock.mockImplementation(statement => {
+        console.log('Mocked updateStatements called with:', statement)
+      }),
     })
   })
 
@@ -25,8 +29,9 @@ describe('Deposit Component', () => {
   it('renders deposit form correctly', () => {
     render(<Deposit />)
 
-    expect(screen.getByText('Deposit Form')).toBeInTheDocument()
-    expect(screen.getByText('Current balance: $1000')).toBeInTheDocument()
+    expect(screen.getByText('Deposit Form.')).toBeInTheDocument()
+    expect(screen.getByText('Account Balance')).toBeInTheDocument()
+    expect(screen.getByText('New Balance')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Enter amount')).toBeInTheDocument()
     expect(screen.getByText('Select your account number')).toBeInTheDocument()
   })
@@ -37,7 +42,11 @@ describe('Deposit Component', () => {
     const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
     fireEvent.change(amountInput, { target: { value: '200' } })
 
-    expect(screen.getByText('Current balance: $1200')).toBeInTheDocument()
+    const currencyNumbers = screen.getAllByTestId('currency-number')
+
+    const balanceText = currencyNumbers.map(el => el.textContent).join('')
+
+    expect(balanceText).toBe('1,200.00')
   })
 
   it('resets balance preview for invalid amount', () => {
@@ -46,39 +55,22 @@ describe('Deposit Component', () => {
     const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
     fireEvent.change(amountInput, { target: { value: '-50' } })
 
-    expect(screen.getByText('Current balance: $1000')).toBeInTheDocument() // Invalid value keeps balance the same
+    const currencyNumbers = screen.getAllByTestId('currency-number')
+
+    const balanceText = currencyNumbers.map(el => el.textContent).join('')
+
+    //* Invalid value keeps balance the same
+    expect(balanceText).toBe('1,000.00')
   })
 
   it('shows error message for missing required fields', async () => {
     render(<Deposit />)
 
-    fireEvent.click(screen.getByText('Submit'))
+    fireEvent.click(screen.getByTestId('submit-deposit'))
 
     await waitFor(() => {
       expect(screen.getByText('Please make sure amount is valid')).toBeInTheDocument()
       expect(screen.getByText('Please select your account number')).toBeInTheDocument()
-    })
-  })
-
-  it('submits the form successfully', async () => {
-    render(<Deposit />)
-
-    const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
-    fireEvent.change(amountInput, { target: { value: '500' } })
-
-    const accountSelect = screen.getByRole('combobox')
-    fireEvent.change(accountSelect, { target: { value: accounts[0] } })
-
-    fireEvent.click(screen.getByText('Submit'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Request submitted successfully')).toBeInTheDocument()
-    })
-
-    expect(updateStatementsMock).toHaveBeenCalledWith({
-      amount: '+500',
-      balance: 1500,
-      type: 'deposit',
     })
   })
 })

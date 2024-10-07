@@ -1,0 +1,21 @@
+.account {
+  .subtitle {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .balance {
+    font-size: var(--font-xxl);
+    font-weight: 700;
+    color: var(--primary);
+  }
+}
+
+.currencyNumber {
+  &:nth-last-of-type(1),
+  &:nth-last-of-type(2) {
+    opacity: 0.5;
+  }
+}

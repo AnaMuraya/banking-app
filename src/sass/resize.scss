@@ -1,0 +1,23 @@
+@mixin for-size($size, $sizeAlt: _) {
+  @if $size == desktopSm {
+    @media (max-width: 800px) {
+      @content;
+    }
+  } @else if $size == tablet {
+    @media (max-width: 768px) {
+      @content;
+    }
+  } @else if $size == mobile {
+    @media (max-width: 460px) {
+      @content;
+    }
+  } @else if $size == mobileSm or $sizeAlt == mobileSm {
+    @media (max-width: 385px) {
+      @content;
+    }
+  } @else if $size == landscape or $sizeAlt == landscape {
+    @media only screen and (max-device-width: 1023px) and (orientation: landscape) {
+      @content;
+    }
+  }
+}

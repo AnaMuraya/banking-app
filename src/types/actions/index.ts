@@ -4,10 +4,13 @@ export enum TransactionTypes {
   transfer = 'transfer',
 }
 
-export interface Transaction {
+export interface TransactionWithoutBalance {
   id: string
   date: string
-  balance: number
-  amount: string
+  amount: number
   type: TransactionTypes
+}
+
+export interface Transaction extends TransactionWithoutBalance {
+  balance: number
 }
