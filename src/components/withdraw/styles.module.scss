@@ -1,8 +1,17 @@
 .wrapper {
-  h3{
+  &.activeItem {
+    opacity: 1;
+    display: block;
+  }
+
+  &.hiddenItem {
+    opacity: 0;
+    display: none;
+  }
+  h3 {
     text-align: center;
   }
-  
+
   .form {
     display: flex;
     flex-direction: column;
@@ -26,9 +35,11 @@
       }
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       height: 40px;
+      padding: 0 10px;
 
       &[type='submit'] {
         background-color: #ff6347;

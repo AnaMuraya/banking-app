@@ -1,182 +1,80 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { accountStatement } from '@/data'
+import { useStatementsContext } from '@/contexts'
+import { SortOrderOptions, StatementFilters } from '@/types'
+import { filterByDateRange, filterByTransactionType, search, sortByDate } from '@/utils'
+import { DateRange, FilterOptions, Pagination, Search, SortDate, Table } from './customOptions'
 
 import styles from './styles.module.scss'
 
-enum StatementFilters {
-  all = 'all',
-  deposit = 'deposit',
-  withdrawal = 'withdrawal',
+interface StatementsProps {
+  selectedFilter?: StatementFilters
 }
 
-export default function Statements() {
+const ROW_PER_PAGE = 10
+
+export default function Statements({ selectedFilter }: StatementsProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  //! combination of filters must be implemented with “AND” logical operator)
-  const [filter, setFilter] = useState<StatementFilters>(StatementFilters.all) //! Include date ranges
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [filter, setFilter] = useState<StatementFilters>(selectedFilter || StatementFilters.all)
+  const [sortOrder, setSortOrder] = useState<SortOrderOptions>(SortOrderOptions.desc)
   const [currentPage, setCurrentPage] = useState(1)
-  // Date range filter
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [test, setTest] = useState<number | null>(null)
+  const { statements } = useStatementsContext()
 
-  const rowsPerPage = 3
+  useEffect(() => {
+    if (selectedFilter) setFilter(selectedFilter)
+  }, [selectedFilter])
 
-  //TODO: Search and filter logic
   const filteredData = useMemo(() => {
-    let data = accountStatement
+    let data = statements
 
-    //* Search by date or amount
-    if (searchTerm) {
-      data = data.filter(
-        (entry) =>
-          entry.date.includes(searchTerm) ||
-          entry.amount.includes(searchTerm) ||
-          entry.balance.toString().includes(searchTerm)
-      )
-    }
-
-    //* Filter by amount type
-    if (filter === StatementFilters.deposit) {
-      data = data.filter((entry) => parseFloat(entry.amount) > 0)
-    } else if (filter === StatementFilters.withdrawal) {
-      data = data.filter((entry) => parseFloat(entry.amount) < 0)
-    }
-
-    //* Filter by date range
-    if (startDate && endDate) {
-      const start = new Date(startDate).getTime()
-      const end = new Date(endDate).getTime()
-      data = data.filter((entry) => {
-        const entryDate = new Date(
-          entry.date.split('.').reverse().join('-')
-        ).getTime()
-        return entryDate >= start && entryDate <= end
-      })
-    }
+    if (searchTerm) data = search(searchTerm, data)
+    data = filterByTransactionType(filter, data)
+    if (startDate && endDate) data = filterByDateRange(startDate, endDate, data)
 
     return data
-  }, [searchTerm, filter, startDate, endDate])
+  }, [searchTerm, filter, sortOrder, currentPage, statements])
 
-  //TODO: Pagination logic
-  const paginatedData = useMemo(() => {
-    //* Sort by date (default: latest date)
-    const newData = filteredData.sort((a, b) => {
-      const dateA = new Date(a.date.split('.').reverse().join('-')).getTime()
-      const dateB = new Date(b.date.split('.').reverse().join('-')).getTime()
-      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
-    })
+  const processedData = useMemo(() => {
+    const newData = sortByDate(filteredData, sortOrder)
 
-    const startIndex = (currentPage - 1) * rowsPerPage
-    return newData.slice(startIndex, startIndex + rowsPerPage)
-  }, [currentPage, filteredData, sortOrder])
+    const startIndex = (currentPage - 1) * ROW_PER_PAGE
+    return newData.slice(startIndex, startIndex + ROW_PER_PAGE)
+  }, [filteredData, sortOrder, currentPage])
 
   const toggleSortOrder = () =>
-    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'))
+    setSortOrder(prevOrder => (prevOrder === SortOrderOptions.asc ? SortOrderOptions.desc : SortOrderOptions.asc))
+  const handleSearchTerm = (value: string) => setSearchTerm(value) //? debounce or callback
+  const handleFilter = (filter: StatementFilters) => setFilter(filter)
+  const handleCurrentPage = (value: number) => setCurrentPage(value)
+  const handleStartDate = (value: string) => setStartDate(value)
+  const handleEndDate = (value: string) => setEndDate(value)
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage)
+  const totalPages = Math.ceil(filteredData.length / ROW_PER_PAGE)
 
   return (
     <div className={styles.wrapper}>
       <h3>Account Statements</h3>
 
-      {/* Search Input */}
-      <input
-        type='text'
-        placeholder='Search by date or amount'
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className={styles.searchInput}
+      <Search searchTerm={searchTerm} handleSearchTerm={handleSearchTerm} />
+
+      <DateRange
+        startDate={startDate}
+        handleStartDate={handleStartDate}
+        endDate={endDate}
+        handleEndDate={handleEndDate}
       />
 
-      {/* Date Range Inputs */}
-      <div className={styles.dateRange}>
-        <label>
-          Start Date:
-          <input
-            type='date'
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </label>
-        <label>
-          End Date:
-          <input
-            type='date'
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </label>
-      </div>
+      <FilterOptions handleFilter={handleFilter} />
 
-      {/* Filter Options */}
-      <div className={styles.filters}>
-        <button onClick={() => setFilter(StatementFilters.all)}>All</button>
-        <button onClick={() => setFilter(StatementFilters.deposit)}>
-          Deposits
-        </button>
-        <button onClick={() => setFilter(StatementFilters.withdrawal)}>
-          Withdrawals
-        </button>
-      </div>
+      <SortDate toggleSortOrder={toggleSortOrder} sortOrder={sortOrder} />
 
-      {/* Sort Button */}
-      <button onClick={toggleSortOrder} className={styles.sortButton}>
-        Sort by Date ({sortOrder === 'desc' ? 'Newest First' : 'Oldest First'})
-      </button>
+      <Table processedData={processedData} />
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((entry, index) => (
-            <tr key={index}>
-              <td>{entry.date}</td>
-              <td>{entry.amount}</td>
-              <td>{entry.balance}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Pagination Controls */}
-      <div className={styles.pagination}>
-        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-          First
-        </button>
-
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage <= 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage !== 0 && currentPage === totalPages}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => setCurrentPage(totalPages)}
-          disabled={currentPage === totalPages}
-        >
-          Last
-        </button>
-      </div>
+      <Pagination currentPage={currentPage} handleCurrentPage={handleCurrentPage} totalPages={totalPages} />
     </div>
   )
 }

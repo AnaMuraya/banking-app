@@ -9,10 +9,7 @@ interface CollapsibleSectionProps {
   children: React.ReactNode
 }
 
-export default function CollapsibleSection({
-  title,
-  children,
-}: CollapsibleSectionProps) {
+export default function CollapsibleSection({ title, children }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleSection = () => {

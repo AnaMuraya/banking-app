@@ -1,42 +1,73 @@
 'use client'
 
+import { isValid } from 'iban'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-import { accounts, accountStatement } from '@/data'
+import { accounts } from '@/app/api/data'
+import { useStatementsContext } from '@/contexts'
 
+import { TransactionTypes } from '@/types'
 import styles from './styles.module.scss'
 
 type Inputs = {
-  accountNumber: string
+  senderAccountNumber: string
+  recipientAccountNumber: string
   amount: number
 }
 
 export default function Transfer() {
   const [previewBalance, setPreviewBalance] = useState<number | null>(null)
+  const { updateStatements, balance } = useStatementsContext()
 
   useEffect(() => {
-    setPreviewBalance(accountStatement[accountStatement.length - 1].balance)
-  }, [])
+    setPreviewBalance(balance)
+  }, [balance])
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitSuccessful },
+    getValues,
   } = useForm<Inputs>()
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+    console.log('Transfer data', data, {
+      id: '22',
+      amount: `-${data.amount}`,
+      balance: balance - data.amount,
+      date: new Date().toISOString(),
+    })
 
-  const balance = accountStatement[accountStatement.length - 1].balance
+    updateStatements({
+      amount: `-${data.amount}`,
+      balance: balance - data.amount,
+      type: TransactionTypes.transfer,
+    })
+  }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputAmount = Number(e.target.value)
 
     if (!isNaN(inputAmount) && inputAmount >= 0) {
-      setPreviewBalance(balance + inputAmount)
+      setPreviewBalance(balance - inputAmount)
     } else {
       setPreviewBalance(balance)
     }
+  }
+
+  const isIBANValid = (iban: string) => {
+    const sender = getValues('senderAccountNumber')
+
+    if (sender === iban) return false
+
+    return isValid(iban)
+  }
+
+  const isAmountValid = (amount: number) => {
+    if (amount > balance) return false
+
+    return true
   }
 
   return (
@@ -47,13 +78,18 @@ export default function Transfer() {
         {isSubmitSuccessful && <p>Request submitted successfully</p>}
 
         <div className={styles.inputWrapper}>
-          <label htmlFor='amount'>Amount</label>
+          <label htmlFor="amount">Amount</label>
           <input
-            {...register('amount', { required: true, min: 10, max: 100000 })}
-            name='amount'
-            type='number'
+            {...register('amount', {
+              required: true,
+              min: 10,
+              max: 100000,
+              validate: isAmountValid,
+            })}
+            name="amount"
+            type="number"
             onChange={handleAmountChange}
-            placeholder='Enter amount'
+            placeholder="Enter amount"
           />
 
           <span>Current balance: ${previewBalance}</span>
@@ -61,14 +97,16 @@ export default function Transfer() {
         </div>
 
         <div className={styles.inputWrapper}>
-          <label htmlFor='accountNumber'>Account Number</label>
+          <label htmlFor="senderAccountNumber">Your Account Number</label>
           <select
-            {...register('accountNumber', { required: true })}
-            name='accountNumber'
-            defaultValue=''
+            {...register('senderAccountNumber', {
+              required: true,
+            })}
+            name="senderAccountNumber"
+            defaultValue=""
           >
-            <option value='' disabled>
-              Select account
+            <option value="" disabled>
+              Select your account number
             </option>
             {accounts.map((acc, idx) => (
               <option value={acc} key={idx}>
@@ -76,10 +114,26 @@ export default function Transfer() {
               </option>
             ))}
           </select>
-          {errors.accountNumber && <p>Please select an account number</p>}
+          {errors.senderAccountNumber && <p>Please select your account number</p>}
         </div>
 
-        <input type='submit' />
+        <div className={styles.inputWrapper}>
+          <label htmlFor="recipientAccountNumber">Recipient's Account Number</label>
+          <input
+            {...register('recipientAccountNumber', {
+              required: true,
+              validate: isIBANValid,
+            })}
+            name="recipientAccountNumber"
+            type="string"
+            onChange={handleAmountChange}
+            placeholder="Enter the recipient's account number"
+          />
+
+          {errors.recipientAccountNumber && <p>Please fill in the recipient's IBAN account number</p>}
+        </div>
+
+        <input type="submit" />
       </form>
     </div>
   )
