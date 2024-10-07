@@ -19,5 +19,5 @@ export const ActiveTabContext: React.FC<ActiveTabContextProps> = ({ children }) 
     else setActiveTab(undefined)
   }, [pathname])
 
-  return <Context.Provider value={{ activeTab }} children={children} />
+  return <Context.Provider value={{ activeTab }}>{children}</Context.Provider>
 }

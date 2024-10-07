@@ -1,5 +1,5 @@
-import { BiFirstPage, BiLastPage } from "react-icons/bi";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
+import { BiFirstPage, BiLastPage } from 'react-icons/bi'
+import { GrFormNext, GrFormPrevious } from 'react-icons/gr'
 
 import styles from './styles.module.scss'
 

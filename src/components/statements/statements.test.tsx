@@ -157,13 +157,10 @@ describe('Statements Component', () => {
   it('applies selectedFilter when passed as a prop', () => {
     const mockFilteredStatements = [
       { id: '2', amount: '200', date: '2018-08-11T05:33:00.000Z', type: 'deposit', balance: 1100 },
-  { id: '4', amount: '1890', date: '2022-01-01T19:37:00.000Z', type: 'deposit', balance: 2592 },
-  { id: '7', amount: '250', date: '2023-07-15T08:02:00.000Z', type: 'deposit', balance: 1100 },
-  { id: '9', amount: '460', date: '2023-05-21T22:49:00.000Z', type: 'deposit', balance: 1240 },
-  { id: '12', amount: '600', date: '2023-03-03T15:50:00.000Z', type: 'deposit', balance: 1280 },
-
-
-
+      { id: '4', amount: '1890', date: '2022-01-01T19:37:00.000Z', type: 'deposit', balance: 2592 },
+      { id: '7', amount: '250', date: '2023-07-15T08:02:00.000Z', type: 'deposit', balance: 1100 },
+      { id: '9', amount: '460', date: '2023-05-21T22:49:00.000Z', type: 'deposit', balance: 1240 },
+      { id: '12', amount: '600', date: '2023-03-03T15:50:00.000Z', type: 'deposit', balance: 1280 },
     ]
 
     const filterByTransactionTypeMock = jest.requireMock('@/utils').filterByTransactionType
@@ -176,6 +173,6 @@ describe('Statements Component', () => {
     expect(screen.getByText(formatDate('2018-08-11T05:33:00.000Z'))).toBeInTheDocument()
     expect(screen.getByText('$1,890.00')).toBeInTheDocument()
     expect(screen.queryByText(formatDate('2024-06-01T16:23:00.000Z'))).not.toBeInTheDocument()
-   expect(screen.queryByText(/-\$/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/-\$/)).not.toBeInTheDocument()
   })
 })

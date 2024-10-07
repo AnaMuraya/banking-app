@@ -6,8 +6,8 @@ import Providers from '@/providers'
 
 import './globals.scss'
 
-const afacad = Afacad({ subsets: ['latin'] })
-const playfair = Playfair_Display({ subsets: ['latin'] })
+const afacad = Afacad({ subsets: ['latin'], display: 'swap', adjustFontFallback: false })
+const playfair = Playfair_Display({ subsets: ['latin'], display: 'swap', adjustFontFallback: false })
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

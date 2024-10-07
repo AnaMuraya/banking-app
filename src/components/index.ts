@@ -6,4 +6,3 @@ export { default as Transfer } from './transfer'
 export { default as Withdraw } from './withdraw'
 export { default as LoadingTemplate } from './loadingTemplate'
 export { default as ErrorTemplate } from './errorTemplate'
-

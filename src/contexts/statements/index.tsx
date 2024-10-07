@@ -33,8 +33,8 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
   const { isPending, isError, error } = useQuery({
     queryKey: ['statements'],
     queryFn: async () => {
-      let data = await fetch('/api/statements')
-      let statements = await data.json()
+      const data = await fetch('/api/statements')
+      const statements = await data.json()
 
       const processedStatements = initializeStatements(statements.accountStatement)
       setStatements(processedStatements)
@@ -112,12 +112,13 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
 
   return (
     <Context.Provider
-      children={children}
       value={{
         statements,
         updateStatements,
         balance,
       }}
-    />
+    >
+      {children}
+    </Context.Provider>
   )
 }

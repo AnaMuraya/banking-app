@@ -122,7 +122,7 @@ export default function Transfer() {
         </div>
 
         <div className={styles.inputWrapper}>
-          <label htmlFor="recipientAccountNumber">Recipient's Account Number</label>
+          <label htmlFor="recipientAccountNumber">Recipient&apos;s Account Number</label>
           <input
             {...register('recipientAccountNumber', {
               required: true,
@@ -135,7 +135,7 @@ export default function Transfer() {
           />
 
           {errors.recipientAccountNumber && (
-            <p className={styles.error}>Please fill in the recipient's IBAN account number</p>
+            <p className={styles.error}>Please fill in the recipient&apos;s IBAN account number</p>
           )}
         </div>
 
