@@ -3,45 +3,34 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { useStatementsContext } from '@/contexts'
 import { StatementFilters, Transaction, TransactionTypes } from '@/types'
-import { formatDate } from '@/elements'
+import { formatDate } from '@/utils'
+
 import Statements from '.'
 
-jest.mock('@/utils', () => ({
-  search: jest.fn((term, data: Transaction[]) => {
-    return data.filter(item => {
-      return item.date.includes(term) || item.amount.toString().includes(term) || item.balance.toString().includes(term)
-    })
-  }),
-  filterByTransactionType: jest.fn((filter, data: Transaction[]) => {
-    switch (filter) {
-      case StatementFilters.deposit:
-        return data.filter(entry => entry.type === TransactionTypes.deposit)
-      case StatementFilters.withdrawal:
-        return data.filter(entry => entry.type === TransactionTypes.withdraw)
-      case StatementFilters.transfer:
-        return data.filter(entry => entry.type === TransactionTypes.transfer)
-      default:
-        return data
-    }
-  }),
-  filterByDateRange: jest.fn((startDate, endDate, data) => {
-    const start = new Date(startDate).getTime()
-    const end = new Date(endDate).getTime()
+jest.mock('@/utils', () => {
+  const actualUtils = jest.requireActual('@/utils')
 
-    return data.filter((entry: { date: string }) => {
-      const entryDate = new Date(entry.date).getTime()
+  return {
+    filterByDateRange: actualUtils.filterByDateRange,
+    sortByDate: actualUtils.sortByDate,
+    formatDate: actualUtils.formatDate,
+    formatCurrency: actualUtils.formatCurrency,
+    search: actualUtils.search,
 
-      return entryDate >= start && entryDate <= end
-    })
-  }),
-  sortByDate: jest.fn((data: Transaction[], order) => {
-    return data.sort((a, b) => {
-      const dateA = new Date(a.date).getTime()
-      const dateB = new Date(b.date).getTime()
-      return order === 'desc' ? dateB - dateA : dateA - dateB
-    })
-  }),
-}))
+    filterByTransactionType: jest.fn((filter, data: Transaction[]) => {
+      switch (filter) {
+        case StatementFilters.deposit:
+          return data.filter(entry => entry.type === TransactionTypes.deposit)
+        case StatementFilters.withdrawal:
+          return data.filter(entry => entry.type === TransactionTypes.withdraw)
+        case StatementFilters.transfer:
+          return data.filter(entry => entry.type === TransactionTypes.transfer)
+        default:
+          return data
+      }
+    }),
+  }
+})
 
 jest.mock('@/contexts', () => ({
   useStatementsContext: jest.fn(),

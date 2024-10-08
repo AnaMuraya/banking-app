@@ -2,12 +2,18 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  table-layout: fixed;
 
   th,
   td {
     padding: 10px;
     text-align: left;
     border: 1px solid #ddd;
+    word-wrap: break-word;
+  }
+
+  td:nth-child(1) {
+    width: 1fr;
   }
 
   th {

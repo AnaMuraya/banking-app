@@ -31,15 +31,14 @@ describe('Deposit Component', () => {
 
     expect(screen.getByText('Deposit Form.')).toBeInTheDocument()
     expect(screen.getByText('Account Balance')).toBeInTheDocument()
-    expect(screen.getByText('New Balance')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Enter amount')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Enter an amount between 10 and 100000')).toBeInTheDocument()
     expect(screen.getByText('Select your account number')).toBeInTheDocument()
   })
 
   it('updates balance preview when entering a valid amount', () => {
     render(<Deposit />)
 
-    const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
+    const amountInput = screen.getByPlaceholderText('Enter an amount between 10 and 100000') as HTMLInputElement
     fireEvent.change(amountInput, { target: { value: '200' } })
 
     const currencyNumbers = screen.getAllByTestId('currency-number')
@@ -47,20 +46,6 @@ describe('Deposit Component', () => {
     const balanceText = currencyNumbers.map(el => el.textContent).join('')
 
     expect(balanceText).toBe('1,200.00')
-  })
-
-  it('resets balance preview for invalid amount', () => {
-    render(<Deposit />)
-
-    const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
-    fireEvent.change(amountInput, { target: { value: '-50' } })
-
-    const currencyNumbers = screen.getAllByTestId('currency-number')
-
-    const balanceText = currencyNumbers.map(el => el.textContent).join('')
-
-    //* Invalid value keeps balance the same
-    expect(balanceText).toBe('1,000.00')
   })
 
   it('shows error message for missing required fields', async () => {

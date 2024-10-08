@@ -1,5 +1,5 @@
-import { formatCurrency, formatDate } from '@/elements'
 import { SortOrderOptions, Transaction, TransactionTypes } from '@/types'
+import { formatCurrency, formatDate } from '@/utils'
 
 import SortDate from './sortDate'
 
@@ -14,6 +14,12 @@ interface TableProps {
 export default function Table({ processedData, toggleSortOrder, sortOrder }: TableProps) {
   return (
     <table className={styles.table}>
+      <colgroup>
+        <col span={1} style={{ width: '50%' }} />
+        <col style={{ width: '25%' }} />
+        <col style={{ width: '25%' }} />
+      </colgroup>
+
       <thead>
         <tr>
           <th>

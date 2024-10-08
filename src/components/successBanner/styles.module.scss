@@ -1,0 +1,16 @@
+.success {
+  color: var(--primary);
+  transition: all 0.5s ease;
+  opacity: 0;
+  width: 100%;
+  font-weight: 700;
+  font-size: var(--font-sm);
+  border: 1px solid var(--primary);
+  padding: 10px 70px;
+  width: fit-content;
+  transition: all 0.5s ease;
+
+  &.active {
+    opacity: 1;
+  }
+}

@@ -5,7 +5,7 @@ import { PiBoxArrowDown, PiBoxArrowUp } from 'react-icons/pi'
 
 import { AccountBalance, Statements } from '@/components'
 import { useStatementsContext } from '@/contexts'
-import { formatCurrency } from '@/elements'
+import { formatCurrency } from '@/utils'
 
 import Link from 'next/link'
 import styles from './page.module.scss'

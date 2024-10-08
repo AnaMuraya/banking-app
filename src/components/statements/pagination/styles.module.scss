@@ -18,17 +18,20 @@
     justify-content: center;
     border: 1px solid transparent;
     transition: all 0.3s ease;
+    background-color: var(--foreground);
+    color: var(--background);
 
     &:hover {
       background: transparent;
       border: 1px solid var(--primary);
+      color: var(--primary);
     }
 
     &:disabled {
-      opacity: 0.5;
+      opacity: 0.3;
       cursor: not-allowed;
-      background: rgb(107, 107, 107);
-      color: white;
+      background: transparent;
+      color: var(--foreground);
 
       &:hover {
         border: 1px solid transparent;

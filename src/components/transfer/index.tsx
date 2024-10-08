@@ -2,95 +2,91 @@
 
 import cn from 'classnames'
 import { isValid } from 'iban'
-import { useEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-
-import { accounts } from '@/app/api/data'
-import { useStatementsContext } from '@/contexts'
-
-import { TransactionTypes } from '@/types'
+import { SetStateAction, useEffect, useRef, useState } from 'react'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { PiCaretDownBold } from 'react-icons/pi'
+
+import { accounts, recipientAccounts } from '@/app/api/data'
+import { useStatementsContext } from '@/contexts'
+import { FormInputs, TransactionTypes } from '@/types'
+
 import AccountBalance from '../accountBalance'
+import AmountInput from '../amountInput'
+import SuccessBanner from '../successBanner'
+
 import styles from './styles.module.scss'
 
-type Inputs = {
-  senderAccountNumber: string
-  recipientAccountNumber: string
-  amount: number
-}
-
 export default function Transfer() {
-  const [previewBalance, setPreviewBalance] = useState<number | null>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const { updateStatements, balance } = useStatementsContext()
+  const wrapperRef = useRef<HTMLUListElement>(null)
 
-  useEffect(() => {
-    setPreviewBalance(balance.balance)
-  }, [balance])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [inputValue, setInputValue] = useState('')
 
-  const { register, handleSubmit, formState, getValues } = useForm<Inputs>()
+  const { register, handleSubmit, formState, reset, control, setValue, getValues } = useForm<FormInputs>()
   const { errors, isSubmitSuccessful } = formState
+  const amount = Number(useWatch({ control, name: 'amount' }))
 
   useEffect(() => {
+    if (!isSubmitSuccessful) return
     if (isSubmitSuccessful) setShowSuccessMessage(true)
 
     setTimeout(() => {
       setShowSuccessMessage(false)
+      reset()
     }, 5000)
-  }, [isSubmitSuccessful])
+  }, [isSubmitSuccessful, reset])
 
-  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-    updateStatements({ amount: data.amount, type: TransactionTypes.transfer })
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [wrapperRef])
+
+  const onSubmit: SubmitHandler<FormInputs> = (data: FormInputs) => {
+    updateStatements({ amount: Number(data.amount), type: TransactionTypes.transfer })
   }
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputAmount = Number(e.target.value)
-
-    if (!isNaN(inputAmount) && inputAmount >= 0) setPreviewBalance(balance.balance - inputAmount)
-    else setPreviewBalance(balance.balance)
-  }
-
-  const isIBANValid = (iban: string) => {
+  const isIBANValid = (iban?: string) => {
     const sender = getValues('senderAccountNumber')
-
     if (sender === iban) return false
-
-    return isValid(iban)
+    return isValid(iban || '')
   }
 
-  const isAmountValid = (amount: number) => {
-    if (amount > balance.balance) return false
-
-    return true
+  const handleOptionClick = (option: SetStateAction<string>) => {
+    setInputValue(option)
+    setShowDropdown(false)
   }
 
+  const handleOptionChange = (e: { target: { value: SetStateAction<string> } }) => {
+    setInputValue(e.target.value)
+    setShowDropdown(false)
+  }
   return (
     <div className={styles.wrapper}>
       <h3 className={styles.title}>Transfer Form.</h3>
 
       <div className={styles.balances}>
         <AccountBalance balance={balance.balance} title="Account Balance" />
-        <AccountBalance balance={previewBalance || balance.balance} title="New Balance" />
+        {!isSubmitSuccessful && typeof amount === 'number' && !isNaN(amount) && (
+          <AccountBalance balance={Number(balance.balance) - amount} title="New Balance" />
+        )}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <p className={cn(styles.success, { [styles.active]: showSuccessMessage })}>Request submitted successfully</p>
+        <SuccessBanner showSuccessMessage={showSuccessMessage} />
 
         <div className={styles.inputWrapper}>
           <label htmlFor="amount">Amount</label>
 
-          <input
-            {...register('amount', {
-              required: true,
-              min: 10,
-              max: 100000,
-              validate: isAmountValid,
-            })}
-            name="amount"
-            type="number"
-            onChange={handleAmountChange}
-            placeholder="Enter amount"
-          />
+          <AmountInput {...{ setValue, register, amount }} />
 
           {errors.amount && <p className={styles.error}>Please make sure amount is valid</p>}
         </div>
@@ -100,12 +96,9 @@ export default function Transfer() {
 
           <div className={styles.selectWrapper}>
             <select
-              {...register('senderAccountNumber', {
-                required: true,
-              })}
-              name="senderAccountNumber"
               defaultValue=""
               aria-label="Sender account number"
+              {...register('senderAccountNumber', { required: true })}
             >
               <option value="" disabled>
                 Select your account number
@@ -124,20 +117,36 @@ export default function Transfer() {
 
         <div className={styles.inputWrapper}>
           <label htmlFor="recipientAccountNumber">Recipient&apos;s Account Number</label>
-          <input
-            {...register('recipientAccountNumber', {
-              required: true,
-              validate: isIBANValid,
-            })}
-            name="recipientAccountNumber"
-            type="string"
-            onChange={handleAmountChange}
-            placeholder="Enter the recipient's account number"
-          />
 
-          {errors.recipientAccountNumber && (
-            <p className={styles.error}>Please fill in the recipient&apos;s IBAN account number</p>
-          )}
+          <div className={styles.selectWrapper}>
+            <input
+              {...register('recipientAccountNumber', {
+                required: true,
+                validate: isIBANValid,
+              })}
+              name="recipientAccountNumber"
+              type="string"
+              onClick={() => setShowDropdown(true)}
+              onChange={handleOptionChange}
+              placeholder="Enter the recipient's IBAN account number"
+              className={styles.recipientInput}
+              value={inputValue}
+            />
+
+            {showDropdown && (
+              <ul className={cn(styles.datalist, { [styles.active]: showDropdown })} ref={wrapperRef}>
+                {recipientAccounts.map((option, index) => (
+                  <li key={index} onClick={() => handleOptionClick(option)} className={styles.option}>
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <PiCaretDownBold className={styles.caret} size={18} />
+          </div>
+
+          {errors.recipientAccountNumber && <p className={styles.error}>This account number is invalid</p>}
         </div>
 
         <input type="submit" data-testid="submit-transfer" />

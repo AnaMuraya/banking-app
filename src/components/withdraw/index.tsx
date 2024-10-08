@@ -1,51 +1,39 @@
 'use client'
 
-import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { PiCaretDownBold } from 'react-icons/pi'
 
 import { accounts } from '@/app/api/data'
 import { useStatementsContext } from '@/contexts'
-import { TransactionTypes } from '@/types'
+import { FormInputs, TransactionTypes } from '@/types'
+
 import AccountBalance from '../accountBalance'
+import AmountInput from '../amountInput'
+import SuccessBanner from '../successBanner'
 
 import styles from './styles.module.scss'
 
-type Inputs = {
-  senderAccountNumber: string
-  amount: number
-}
-
 export default function Withdraw() {
-  const [previewBalance, setPreviewBalance] = useState<number | null>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const { updateStatements, balance } = useStatementsContext()
 
-  useEffect(() => {
-    setPreviewBalance(balance.balance)
-  }, [balance])
-
-  const { register, handleSubmit, formState } = useForm<Inputs>()
+  const { register, handleSubmit, formState, reset, control, setValue } = useForm<FormInputs>()
   const { errors, isSubmitSuccessful } = formState
+  const amount = Number(useWatch({ control, name: 'amount' }))
 
   useEffect(() => {
+    if (!isSubmitSuccessful) return
     if (isSubmitSuccessful) setShowSuccessMessage(true)
 
     setTimeout(() => {
       setShowSuccessMessage(false)
+      reset()
     }, 5000)
-  }, [isSubmitSuccessful])
+  }, [reset, isSubmitSuccessful])
 
-  const onSubmit: SubmitHandler<Inputs> = data => {
-    updateStatements({ amount: data.amount, type: TransactionTypes.withdraw })
-  }
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputAmount = Number(e.target.value)
-
-    if (!isNaN(inputAmount) && inputAmount >= 0) setPreviewBalance(balance.balance - inputAmount)
-    else setPreviewBalance(balance.balance)
+  const onSubmit: SubmitHandler<FormInputs> = data => {
+    updateStatements({ amount: Number(data.amount), type: TransactionTypes.withdraw })
   }
 
   return (
@@ -54,22 +42,18 @@ export default function Withdraw() {
 
       <div className={styles.balances}>
         <AccountBalance balance={balance.balance} title="Account Balance" />
-        <AccountBalance balance={previewBalance || balance.balance} title="New Balance" />
+        {!isSubmitSuccessful && typeof amount === 'number' && !isNaN(amount) && (
+          <AccountBalance balance={Number(balance.balance) - amount} title="New Balance" />
+        )}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <p className={cn(styles.success, { [styles.active]: showSuccessMessage })}>Request submitted successfully</p>
+        <SuccessBanner showSuccessMessage={showSuccessMessage} />
 
         <div className={styles.inputWrapper}>
           <label htmlFor="amount">Amount</label>
 
-          <input
-            {...register('amount', { required: true, min: 10, max: 100000 })}
-            name="amount"
-            type="number"
-            onChange={handleAmountChange}
-            placeholder="Enter amount"
-          />
+          <AmountInput {...{ setValue, register, amount }} />
 
           {errors.amount && <p className={styles.error}>Please make sure amount is valid</p>}
         </div>
@@ -78,13 +62,7 @@ export default function Withdraw() {
           <label htmlFor="senderAccountNumber">Your Account Number</label>
 
           <div className={styles.selectWrapper}>
-            <select
-              {...register('senderAccountNumber', {
-                required: true,
-              })}
-              name="senderAccountNumber"
-              defaultValue=""
-            >
+            <select defaultValue="" {...register('senderAccountNumber', { required: true })}>
               <option value="" disabled>
                 Select your account number
               </option>

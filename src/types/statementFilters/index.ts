@@ -9,3 +9,9 @@ export enum SortOrderOptions {
   asc = 'asc',
   desc = 'desc',
 }
+
+export interface FormInputs {
+  senderAccountNumber?: string
+  recipientAccountNumber?: string
+  amount?: number
+}

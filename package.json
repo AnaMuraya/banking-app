@@ -9,8 +9,7 @@
     "format": "prettier --write .",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "test:file": "jest ./src/components/statements/statements.test.tsx"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.59.0",

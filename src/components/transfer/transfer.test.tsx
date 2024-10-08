@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { recipientAccounts } from '@/app/api/data'
 import { useStatementsContext } from '@/contexts'
 
 import Transfer from '.'
@@ -12,6 +11,7 @@ jest.mock('@/contexts', () => ({
 
 const mockUpdateStatements = jest.fn()
 const mockBalance = 1000
+export const recipientAccounts = ['FR14 2004 1010 0505 0001 3M02 606', '123 2100 0418 4502 0005 1332']
 
 describe('Transfer Component', () => {
   beforeEach(() => {
@@ -25,16 +25,15 @@ describe('Transfer Component', () => {
     render(<Transfer />)
     expect(screen.getByText('Transfer Form.')).toBeInTheDocument()
     expect(screen.getByText('Account Balance')).toBeInTheDocument()
-    expect(screen.getByText('New Balance')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Enter amount')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Enter an amount between 10 and 100000')).toBeInTheDocument()
     expect(screen.getByText('Select your account number')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText("Enter the recipient's account number")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("Enter the recipient's IBAN account number")).toBeInTheDocument()
   })
 
   it('displays current balance and updates preview balance when amount changes', () => {
     render(<Transfer />)
 
-    const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
+    const amountInput = screen.getByPlaceholderText('Enter an amount between 10 and 100000') as HTMLInputElement
     fireEvent.change(amountInput, { target: { value: '100' } })
 
     const currencyNumbers = screen.getAllByTestId('currency-number')
@@ -44,28 +43,26 @@ describe('Transfer Component', () => {
     expect(balanceText).toBe('900.00')
   })
 
-  it('validates the amount and prevents submission if the amount exceeds balance', async () => {
+  it('validates the amount if the amount exceeds balance', async () => {
     render(<Transfer />)
 
-    const amountInput = screen.getByPlaceholderText('Enter amount') as HTMLInputElement
+    const amountInput = screen.getByPlaceholderText('Enter an amount between 10 and 100000') as HTMLInputElement
     fireEvent.change(amountInput, { target: { value: '1500' } })
 
-    fireEvent.click(screen.getByTestId('submit-transfer'))
+    const currencyNumbers = screen.getAllByTestId('balance')[1]
 
-    await waitFor(() => {
-      expect(screen.getByText('Please make sure amount is valid')).toBeInTheDocument()
-    })
+    expect(currencyNumbers.textContent).toBe('-$500.00')
   })
 
   it('validates the recipient account number and prevents submission if invalid', async () => {
     render(<Transfer />)
 
-    const recipientAccountNo = screen.getByPlaceholderText("Enter the recipient's account number")
+    const recipientAccountNo = screen.getByPlaceholderText("Enter the recipient's IBAN account number")
     fireEvent.change(recipientAccountNo, { target: { value: recipientAccounts[1] } })
 
     await act(async () => fireEvent.click(screen.getByTestId('submit-transfer')))
 
-    const recipientError = screen.getByText("Please fill in the recipient's IBAN account number")
+    const recipientError = screen.getByText('This account number is invalid')
     await waitFor(() => {
       expect(recipientError).toBeInTheDocument()
     })

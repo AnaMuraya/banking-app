@@ -41,7 +41,7 @@
     flex-direction: column;
     gap: 24px;
     justify-content: center;
-    color: white;
+    color: var(--foreground);
     margin-bottom: 120px;
 
     .inputWrapper {
@@ -53,9 +53,9 @@
       width: 100%;
 
       .error {
-        position: absolute;
-        top: 100%;
-        color: orangered;
+        color: var(--error);
+        font-weight: 400;
+        font-size: var(--font-sm);
       }
     }
 
@@ -114,11 +114,10 @@
       color: greenyellow;
       transition: all 0.5s ease;
       opacity: 0;
-      position: absolute;
-      top: -25px;
       text-align: center;
       width: 100%;
-      font-weight: bold;
+      font-weight: 400;
+      font-size: var(--font-sm);
 
       &.active {
         opacity: 1;

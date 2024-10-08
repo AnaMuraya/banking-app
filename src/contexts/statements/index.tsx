@@ -41,10 +41,12 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
 
       return statements
     },
+    refetchOnWindowFocus: false,
   })
 
   const updateStatements = (statement: newStatement): void => {
     let bal = balance.balance
+
     if (statement.type === TransactionTypes.deposit) bal += statement.amount
     else bal -= statement.amount
 
@@ -69,10 +71,10 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
     ])
 
     setBalance({
-      balance: bal,
-      deposits,
-      withdrawals,
-      transfers,
+      balance: Number(bal),
+      deposits: Number(deposits),
+      withdrawals: Number(withdrawals),
+      transfers: Number(transfers),
     })
   }
 

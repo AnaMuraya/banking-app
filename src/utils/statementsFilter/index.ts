@@ -1,5 +1,6 @@
-import { formatDate } from '@/elements'
 import { SortOrderOptions, StatementFilters, Transaction, TransactionTypes } from '@/types'
+
+import { formatDate } from '../formatDate'
 
 export const search = (searchTerm: string, data: Transaction[]) => {
   const searchTermLower = searchTerm.toLowerCase()
