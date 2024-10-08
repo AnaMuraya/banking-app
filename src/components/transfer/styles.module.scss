@@ -115,17 +115,17 @@
     }
 
     .datalist {
-   position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: rgba(32, 32, 32, 0.97);
-    border-radius: 10px;
-    border: 0.3px solid var(--foreground);
-    padding: 4px;
-    list-style: none;
-    z-index: 9;
-    height: fit-content;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(32, 32, 32, 0.97);
+      border-radius: 10px;
+      border: 0.3px solid var(--foreground);
+      padding: 4px;
+      list-style: none;
+      z-index: 9;
+      height: fit-content;
 
       .option {
         font-size: var(--font-sm);
