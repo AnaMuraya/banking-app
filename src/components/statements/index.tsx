@@ -35,6 +35,7 @@ export default function Statements({ title, selectedFilter }: StatementsProps) {
 
   const filteredData = useMemo(() => {
     let data = statements
+    setCurrentPage(1)
 
     if (searchTerm) data = search(searchTerm, data)
     data = filterByTransactionType(filter, data)
@@ -52,7 +53,7 @@ export default function Statements({ title, selectedFilter }: StatementsProps) {
 
   const toggleSortOrder = () =>
     setSortOrder(prevOrder => (prevOrder === SortOrderOptions.asc ? SortOrderOptions.desc : SortOrderOptions.asc))
-  const handleSearchTerm = (value: string) => setSearchTerm(value) //? debounce or callback
+  const handleSearchTerm = (value: string) => setSearchTerm(value)
   const handleFilter = (filter: StatementFilters) => setFilter(filter)
   const handleCurrentPage = (value: number) => setCurrentPage(value)
   const handleStartDate = (value: string) => setStartDate(value)
