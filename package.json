@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "jest && next build",
+    "build": "next build",
+    "build:dev": "jest && next build",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "next lint",
@@ -13,7 +14,7 @@
     "test:file": "jest ./src/components/statements/statements.test.tsx",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test-playwright": "playwright test"
+    "test-playwright": "NEXT_PUBLIC_PLAYWRIGHT_TEST=true playwright test"
   },
   "dependencies": {
     "@storybook/addon-styling-webpack": "^1.0.0",

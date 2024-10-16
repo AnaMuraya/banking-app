@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { TransactionTypes } from '@/types'
+
 const LOCAL_URL = 'http://localhost:3000'
 const YOUR_ACCOUNT_NUMBER = 'ES91 2100 0418 4502 0005 1332'
 const RECIPIENT_ACCOUNT_NUMBER = 'DE89370400440532013000'
@@ -10,9 +12,9 @@ test.describe('Banking Application E2E Tests', () => {
       window.mockStatementsContext = {
         balance: { balance: 1000, deposits: 100, withdrawals: 200, transfers: 300 },
         statements: [
-          { id: '1', amount: 100, date: '2023-01-01T22:49:00.000Z', type: 'deposit', balance: 1500 },
-          { id: '2', amount: 200, date: '2023-01-02T15:50:00.000Z', type: 'withdraw', balance: 1300 },
-          { id: '3', amount: 300, date: '2023-01-03T10:06:21.614Z', type: 'transfer', balance: 1000 },
+          { id: '1', amount: 100, date: '2023-01-01T22:49:00.000Z', type: TransactionTypes.deposit, balance: 1500 },
+          { id: '2', amount: 200, date: '2023-01-02T15:50:00.000Z', type: TransactionTypes.withdraw, balance: 1300 },
+          { id: '3', amount: 300, date: '2023-01-03T10:06:21.614Z', type: TransactionTypes.transfer, balance: 1000 },
         ],
         updateStatements: statement => {
           console.log('Mock updateStatements called with:', statement)
@@ -115,95 +117,95 @@ test.describe('Banking Application E2E Tests', () => {
     await expect(page.getByText('Request submitted successfully')).toBeVisible()
   })
 
-//   test('should display and filter statements correctly', async ({ page }) => {
-//     await page.goto(LOCAL_URL)
+  //   test('should display and filter statements correctly', async ({ page }) => {
+  //     await page.goto(LOCAL_URL)
 
-//     //* Check initial number of rows
-//     let rows = await page.getByRole('row').all()
-//     expect(rows.length).toBeGreaterThan(1)
+  //     //* Check initial number of rows
+  //     let rows = await page.getByRole('row').all()
+  //     expect(rows.length).toBeGreaterThan(1)
 
-//     //* Filter by deposit
-//     await page.getByRole('button', { name: 'Deposits' }).click()
+  //     //* Filter by deposit
+  //     await page.getByRole('button', { name: 'Deposits' }).click()
 
-//     rows = await page.getByRole('row').all()
-//     for (let i = 1; i < rows.length; i++) {
-//       //* Expect the amount to not have a negative sign
-//       const amount = await rows[i].getByRole('cell').nth(1).innerText()
-//       console.log('amount', await rows[i].getByRole('cell'))
+  //     rows = await page.getByRole('row').all()
+  //     for (let i = 1; i < rows.length; i++) {
+  //       //* Expect the amount to not have a negative sign
+  //       const amount = await rows[i].getByRole('cell').nth(1).innerText()
+  //       console.log('amount', await rows[i].getByRole('cell'))
 
-//       expect(amount).not.toContain('-')
-//     }
+  //       expect(amount).not.toContain('-')
+  //     }
 
-//     //* Filter by date range
-//     await page.getByLabel('Start Date').fill('2023-01-01')
-//     await page.getByLabel('End Date').fill('2023-12-31')
-//     rows = await page.getByRole('row').all()
-//     for (let i = 1; i < rows.length; i++) {
-//       // Skip header row
-//       const dateText = await rows[i].getByRole('cell').first().innerText()
-//       const date = new Date(dateText)
-//       expect(date.getFullYear()).toBe(2023)
-//     }
+  //     //* Filter by date range
+  //     await page.getByLabel('Start Date').fill('2023-01-01')
+  //     await page.getByLabel('End Date').fill('2023-12-31')
+  //     rows = await page.getByRole('row').all()
+  //     for (let i = 1; i < rows.length; i++) {
+  //       // Skip header row
+  //       const dateText = await rows[i].getByRole('cell').first().innerText()
+  //       const date = new Date(dateText)
+  //       expect(date.getFullYear()).toBe(2023)
+  //     }
 
-//     // //* Test pagination
-//     // const initialPageText = await page.getByText(/Page \d+ of \d+/).innerText()
-//     // await page.getByTestId('next-page').click()
-//     // const newPageText = await page.getByText(/Page \d+ of \d+/).innerText()
-//     // expect(newPageText).not.toBe(initialPageText)
-//   })
+  //     // //* Test pagination
+  //     // const initialPageText = await page.getByText(/Page \d+ of \d+/).innerText()
+  //     // await page.getByTestId('next-page').click()
+  //     // const newPageText = await page.getByText(/Page \d+ of \d+/).innerText()
+  //     // expect(newPageText).not.toBe(initialPageText)
+  //   })
 
-// test('should display and filter statements correctly', async ({ page }) => {
-//   await page.goto(LOCAL_URL)
+  // test('should display and filter statements correctly', async ({ page }) => {
+  //   await page.goto(LOCAL_URL)
 
-//   // Check initial number of rows
-//   let rows = await page.getByRole('row').all()
-// //   expect(rows.length).toBeGreaterThan(1)
+  //   // Check initial number of rows
+  //   let rows = await page.getByRole('row').all()
+  // //   expect(rows.length).toBeGreaterThan(1)
 
-//   // Filter by deposit
-//   await page.getByRole('button', { name: 'Deposits' }).click()
+  //   // Filter by deposit
+  //   await page.getByRole('button', { name: 'Deposits' }).click()
 
-//   rows = await page.getByRole('row').all()
-//   for (let i = 1; i < rows.length; i++) {
-//     // Skip header row
-//     const amount = await rows[i].getByRole('cell').nth(1).innerText()
-//     expect(amount).not.toContain('-')
-//   }
+  //   rows = await page.getByRole('row').all()
+  //   for (let i = 1; i < rows.length; i++) {
+  //     // Skip header row
+  //     const amount = await rows[i].getByRole('cell').nth(1).innerText()
+  //     expect(amount).not.toContain('-')
+  //   }
 
-//   // Filter by date range
-//   await page.getByTestId('start-date').fill('2023-01-01')
-//   await page.getByTestId('end-date').fill('2023-12-31')
+  //   // Filter by date range
+  //   await page.getByTestId('start-date').fill('2023-01-01')
+  //   await page.getByTestId('end-date').fill('2023-12-31')
 
-//   await page.waitForTimeout(1000) // Wait for the table to update
+  //   await page.waitForTimeout(1000) // Wait for the table to update
 
-//   rows = await page.getByRole('row').all()
-//   for (let i = 1; i < rows.length; i++) {
-//     // Skip header row
-//     const dateText = await rows[i].getByRole('cell').first().innerText()
-//     console.log('dateText', dateText)
-//     // const date = new Date(dateText)
-//     // expect(dateText).toBe(2023)
-//   }
+  //   rows = await page.getByRole('row').all()
+  //   for (let i = 1; i < rows.length; i++) {
+  //     // Skip header row
+  //     const dateText = await rows[i].getByRole('cell').first().innerText()
+  //     console.log('dateText', dateText)
+  //     // const date = new Date(dateText)
+  //     // expect(dateText).toBe(2023)
+  //   }
 
-//   // Test pagination
-//   const initialPageText = await page.getByText(/Page \d+ of \d+/).innerText()
-//   await page.getByTestId('next-page').click()
+  //   // Test pagination
+  //   const initialPageText = await page.getByText(/Page \d+ of \d+/).innerText()
+  //   await page.getByTestId('next-page').click()
 
-//   await page.waitForTimeout(1000) // Wait for the table to update
+  //   await page.waitForTimeout(1000) // Wait for the table to update
 
-//   const newPageText = await page.getByText(/Page \d+ of \d+/).innerText()
-//   expect(newPageText).not.toBe(initialPageText)
+  //   const newPageText = await page.getByText(/Page \d+ of \d+/).innerText()
+  //   expect(newPageText).not.toBe(initialPageText)
 
-//   // Test search functionality
-//   await page.getByPlaceholder('Search by date or amount').fill('100')
+  //   // Test search functionality
+  //   await page.getByPlaceholder('Search by date or amount').fill('100')
 
-//   await page.waitForTimeout(1000) // Wait for the table to update
+  //   await page.waitForTimeout(1000) // Wait for the table to update
 
-//   rows = await page.getByRole('row').all()
-//   expect(rows.length).toBeGreaterThan(1)
-//   for (let i = 1; i < rows.length; i++) {
-//     // Skip header row
-//     const rowText = await rows[i].innerText()
-//     expect(rowText).toContain('100')
-//   }
-// })
+  //   rows = await page.getByRole('row').all()
+  //   expect(rows.length).toBeGreaterThan(1)
+  //   for (let i = 1; i < rows.length; i++) {
+  //     // Skip header row
+  //     const rowText = await rows[i].innerText()
+  //     expect(rowText).toContain('100')
+  //   }
+  // })
 })

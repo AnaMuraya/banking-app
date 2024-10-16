@@ -1,13 +1,15 @@
+import { IStatements, TransactionTypes } from '@/types'
+
 declare global {
   interface Window {
-    mockStatementsContext: typeof newMockStatementsContext
+    mockStatementsContext: IStatements
   }
 }
 
 export const newMockStatementsContext = {
   statements: [
-    { id: '1', amount: 100, date: '2023-01-01', type: 'deposit', balance: 1100 },
-    { id: '2', amount: 200, date: '2023-01-02', type: 'withdraw', balance: 900 },
+    { id: '1', amount: 100, date: '2023-01-01', type: TransactionTypes.deposit, balance: 1100 },
+    { id: '2', amount: 200, date: '2023-01-02', type: TransactionTypes.withdraw, balance: 900 },
   ],
   balance: {
     balance: 1000,
