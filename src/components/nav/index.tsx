@@ -11,7 +11,7 @@ import { TransactionTypes } from '@/types'
 
 import styles from './styles.module.scss'
 
-export default function Header() {
+export default function Nav() {
   const { activeTab } = useActiveTabContext()
   const router = useRouter()
 

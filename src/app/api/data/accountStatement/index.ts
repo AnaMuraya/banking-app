@@ -152,11 +152,12 @@ export const accountStatement: TransactionWithoutBalance[] = [
     type: TransactionTypes.transfer,
   },
 ]
+
 export const accounts = ['ES91 2100 0418 4502 0005 1332']
 
 export const recipientAccounts = [
-  'FR14 2004 1010 0505 0001 3M02 606',
   'DE89370400440532013000',
   'GB29NWBK60161331926819',
   'FR7630006000011234567890189',
+  'FR14 2004 1010 0505 0001 3M02 606',
 ]

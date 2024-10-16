@@ -17,11 +17,13 @@ import {
 } from '@/types'
 import { sortByDate } from '@/utils'
 
-const Context = createContext<IStatements>({} as IStatements)
+export const StatementsContext = createContext<IStatements>({} as IStatements)
 
-export const useStatementsContext = () => useContext(Context)
+// export const useStatementsContext = () => useContext(Context)
+export const useStatementsContext = () =>
+  (typeof window !== 'undefined' && window.mockStatementsContext) || useContext(StatementsContext)
 
-export const StatementsContext: React.FC<StatementsContextProps> = ({ children }) => {
+export const StatementsContextProvider: React.FC<StatementsContextProps> = ({ children }) => {
   const [statements, setStatements] = useState<Transaction[]>([])
   const [balance, setBalance] = useState<Balance>({
     balance: 0,
@@ -113,7 +115,7 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
   if (isError) return <ErrorTemplate error={error.message} />
 
   return (
-    <Context.Provider
+    <StatementsContext.Provider
       value={{
         statements,
         updateStatements,
@@ -121,6 +123,6 @@ export const StatementsContext: React.FC<StatementsContextProps> = ({ children }
       }}
     >
       {children}
-    </Context.Provider>
+    </StatementsContext.Provider>
   )
 }

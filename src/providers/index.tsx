@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 
-import { ActiveTabContext, StatementsContext } from '@/contexts'
+import { ActiveTabContextProvider, StatementsContextProvider } from '@/contexts'
 
 interface ProvidersProps {
   children?: ReactNode
@@ -16,9 +16,9 @@ export default function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatementsContext>
-        <ActiveTabContext>{children}</ActiveTabContext>
-      </StatementsContext>
+      <StatementsContextProvider>
+        <ActiveTabContextProvider>{children}</ActiveTabContextProvider>
+      </StatementsContextProvider>
     </QueryClientProvider>
   )
 }

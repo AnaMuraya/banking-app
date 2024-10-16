@@ -3,7 +3,7 @@ import { Afacad, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import { Metadata } from 'next'
 
-import { Header } from '@/components'
+import { Nav } from '@/components'
 import Providers from '@/providers'
 
 import './globals.scss'
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={cn(afacad.className, playfair.className)}>
         <Analytics />
         <Providers>
-          <Header />
+          <Nav />
           <main className="main">{children}</main>
         </Providers>
       </body>

@@ -9,7 +9,7 @@ const customConfig: Config = {
   preset: 'ts-jest',
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['/node_modules'],
+  testPathIgnorePatterns: ['/node_modules', '/tests', '/tests-examples'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

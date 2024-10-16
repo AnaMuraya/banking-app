@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useStatementsContext } from '@/contexts'
-import { SortOrderOptions, StatementFilters } from '@/types'
+import { SortOrderOptions, StatementFilters, Transaction } from '@/types'
 import { filterByDateRange, filterByTransactionType, search, sortByDate } from '@/utils'
 import DateRange from './dateRange'
 import FilterOptions from './filterOptions'
@@ -27,6 +27,7 @@ export default function Statements({ title, selectedFilter }: StatementsProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+
   const { statements } = useStatementsContext()
 
   useEffect(() => {
@@ -34,8 +35,7 @@ export default function Statements({ title, selectedFilter }: StatementsProps) {
   }, [selectedFilter])
 
   const filteredData = useMemo(() => {
-    let data = statements
-    setCurrentPage(1)
+    let data = statements as Transaction[]
 
     if (searchTerm) data = search(searchTerm, data)
     data = filterByTransactionType(filter, data)
@@ -44,22 +44,28 @@ export default function Statements({ title, selectedFilter }: StatementsProps) {
     return data
   }, [searchTerm, filter, statements, startDate, endDate])
 
-  const processedData = useMemo(() => {
-    const newData = sortByDate(filteredData, sortOrder)
+  const totalPages = useMemo(() => Math.ceil(filteredData.length / ROW_PER_PAGE), [filteredData])
 
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1)
+    }
+  }, [totalPages, currentPage])
+
+  const processedData = useMemo(() => {
+    const sortedData = sortByDate(filteredData, sortOrder)
     const startIndex = (currentPage - 1) * ROW_PER_PAGE
-    return newData.slice(startIndex, startIndex + ROW_PER_PAGE)
+    return sortedData.slice(startIndex, startIndex + ROW_PER_PAGE)
   }, [filteredData, sortOrder, currentPage])
 
-  const toggleSortOrder = () =>
+  const toggleSortOrder = useCallback(() => {
     setSortOrder(prevOrder => (prevOrder === SortOrderOptions.asc ? SortOrderOptions.desc : SortOrderOptions.asc))
+  }, [])
   const handleSearchTerm = (value: string) => setSearchTerm(value)
   const handleFilter = (filter: StatementFilters) => setFilter(filter)
   const handleCurrentPage = (value: number) => setCurrentPage(value)
   const handleStartDate = (value: string) => setStartDate(value)
   const handleEndDate = (value: string) => setEndDate(value)
-
-  const totalPages = Math.ceil(filteredData.length / ROW_PER_PAGE)
 
   return (
     <div className={styles.wrapper}>
