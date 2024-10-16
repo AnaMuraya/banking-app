@@ -20,8 +20,16 @@ import { sortByDate } from '@/utils'
 export const StatementsContext = createContext<IStatements>({} as IStatements)
 
 // export const useStatementsContext = () => useContext(Context)
-export const useStatementsContext = () =>
-  (typeof window !== 'undefined' && window.mockStatementsContext) || useContext(StatementsContext)
+// export const useStatementsContext = () =>
+//   (typeof window !== 'undefined' && window.mockStatementsContext) || useContext(StatementsContext)
+
+export const useStatementsContext = () => {
+  const context = useContext(StatementsContext)
+  if (typeof window !== 'undefined' && process.env.NEXT_PLAYWRIGHT_TEST === 'true') {
+    return window.mockStatementsContext
+  }
+  return context
+}
 
 export const StatementsContextProvider: React.FC<StatementsContextProps> = ({ children }) => {
   const [statements, setStatements] = useState<Transaction[]>([])
