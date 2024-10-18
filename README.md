@@ -16,6 +16,10 @@ This application contains three main features;
 3. Sass
 4. React-hook-form
 5. React Context API
+6. React Tanstack Query
+7. Jest
+8. React Testing Library
+9. Storybook
 
 ## Getting Started
 
